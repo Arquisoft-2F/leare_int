@@ -1,0 +1,24 @@
+{
+  "name": "leare_int",
+  "version": "1.0.0",
+  "description": "SOAP server for Leare",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arquisoft-2F/leare_int.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Arquisoft-2F/leare_int/issues"
+  },
+  "homepage": "https://github.com/Arquisoft-2F/leare_int#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0"
+  }
+}
