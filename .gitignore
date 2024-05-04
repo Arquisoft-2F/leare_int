@@ -1,1 +1,28 @@
-/node_modules
+# .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+
+# Flask
+instance/
+
+# Spyne
+*.log
+
+# IDEs and editors
+/.vscode
+*.swp
+*.swo
+*.swn
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
