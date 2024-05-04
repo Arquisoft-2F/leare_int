@@ -1,7 +1,7 @@
 from flask import request
 from spyne.server.wsgi import WsgiApplication
 from time import ctime
-from spyne import ServiceBase, rpc, Application, Integer, Unicode, Iterable
+from spyne import ServiceBase, rpc, Application, Integer, Unicode, Array
 from spyne.protocol.soap import Soap11
 from flask import Flask
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -20,7 +20,7 @@ class TestService(ServiceBase):
 	def add(self, a, b):
 		return a + b
 	
-	@rpc(Unicode, _returns=Iterable(SearchResponse))
+	@rpc(Unicode, _returns=Array(SearchResponse))
 	def search(self, q):
 		return get_posts(q)
 
