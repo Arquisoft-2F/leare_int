@@ -26,7 +26,7 @@ client = Client(transport=transport, fetch_schema_from_transport=True)
 def get_posts(q: str) -> SearchModel:
 	query = gql(f'''
 		query Search {{
-			getPosts(q: {q}) {{
+			getPosts(q: "{q}") {{
 				highlight {{
 					name
 					lastname

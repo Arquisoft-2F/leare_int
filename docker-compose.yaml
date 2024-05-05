@@ -1,11 +1,18 @@
-version: '3'
+version: '3.8'
 services:
-  app:
-    build: .
-    volumes:
-      - .:/app
-    ports:
-      - "5000:5000"
-    environment:
-      - FLASK_ENV=development
-    command: flask run --host=0.0.0.0 --port=5000
+  web-nginx:
+      build:
+        context: .
+        dockerfile: Dockerfile.nginx
+      ports:
+        - "80:80"
+        - "443:443"
+
+  leare-int:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "5000:5000"
+      volumes:
+        - .:/app
