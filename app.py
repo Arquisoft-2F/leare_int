@@ -1,4 +1,3 @@
-from flask import request
 from spyne.server.wsgi import WsgiApplication
 from time import ctime
 from spyne import ServiceBase, rpc, Application, Integer, Unicode, Array, ComplexModel
@@ -51,7 +50,7 @@ def get_posts(token: str, q: str) -> SearchModel:
 app = Flask(__name__)
 
 class AuthenticationHeader(ComplexModel):
-    Authorization = Unicode
+    HTTP_AUTHORIZATION = Unicode
 
 class LeareIntService(ServiceBase):
 	__in_header__ = AuthenticationHeader
@@ -67,19 +66,22 @@ class LeareIntService(ServiceBase):
 	@rpc(Unicode, _returns=Array(SearchModel))
 	def search(self, q):
 		headers = self.in_header
-		token = headers.Authorization
+		print(headers)
+		token = headers.HTTP_AUTHORIZATION
+		print(token)
 		return get_posts(token, q)
 
 soap_app = Application([LeareIntService], 'leare_int',
 					   in_protocol=Soap11(validator='lxml'),
 					   out_protocol=Soap11())
-wsgi_app = WsgiApplication(soap_app)
 
-app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
-	'/soap': wsgi_app
-})
+# app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+# 	'/soap': wsgi_app
+# })
 
 if __name__ == '__main__':
+	from wsgiref.simple_server import make_server
+	wsgi_app = WsgiApplication(soap_app)
+	server = make_server('0.0.0.0', 5000, wsgi_app)
 	print('Running on http://localhost:5000/soap')
-	app.debug = True
-	app.run()
+	server.serve_forever()
