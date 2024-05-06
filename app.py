@@ -74,14 +74,13 @@ class LeareIntService(ServiceBase):
 soap_app = Application([LeareIntService], 'leare_int',
 					   in_protocol=Soap11(validator='lxml'),
 					   out_protocol=Soap11())
+wsgi_app = WsgiApplication(soap_app)
 
-# app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
-# 	'/soap': wsgi_app
-# })
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+	'/soap': wsgi_app
+})
 
 if __name__ == '__main__':
-	from wsgiref.simple_server import make_server
-	wsgi_app = WsgiApplication(soap_app)
-	server = make_server('0.0.0.0', 5000, wsgi_app)
 	print('Running on http://localhost:5000/soap')
-	server.serve_forever()
+	app.debug = True
+	app.run(host='0.0.0.0')
