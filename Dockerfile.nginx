@@ -6,4 +6,4 @@ COPY config/nginx.conf /etc/nginx/conf.d/
 
 COPY certs/ /etc/nginx/ssl/
 
-EXPOSE 80 443
+EXPOSE 3048 3047

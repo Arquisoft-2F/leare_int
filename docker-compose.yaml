@@ -1,12 +1,14 @@
 version: '3.8'
 services:
-  web-nginx:
+  int-rp:
       build:
         context: .
         dockerfile: Dockerfile.nginx
       ports:
-        - "80:80"
-        - "443:443"
+        - "3048:3048"
+        - "3047:3047"
+      networks:
+        - leare-network
 
   leare-int:
       build:
@@ -16,3 +18,9 @@ services:
         - "5000:5000"
       volumes:
         - .:/app
+      networks:
+        - leare-network
+
+networks:
+  leare-network:
+    external: true
