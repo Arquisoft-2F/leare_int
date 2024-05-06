@@ -1,29 +1,28 @@
 from flask import request
 from spyne.server.wsgi import WsgiApplication
 from time import ctime
-from spyne import ServiceBase, rpc, Application, Integer, Unicode, Array
+from spyne import ServiceBase, rpc, Application, Integer, Unicode, Array, ComplexModel
 from spyne.protocol.soap import Soap11
 from flask import Flask
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
-# from src.services import get_posts
 from src.models.search_response import SearchModel
 
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 from src.models.search_response import SearchModel
 
-transport = RequestsHTTPTransport(
-	'http://35.215.30.59:5555/graphql',
-	headers={
-		'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJmMmIwNGExOC03MzNhLTRhZmMtYTYyNy0zZGQ4ZjRjY2FkY2EiLCJVc2VybmFtZSI6Imp1YW5wZXJleiIsIlJvbGUiOiJhZG1pbiIsImV4cCI6MTcxNDkzNzc4OSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzIwMiIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcyMDIifQ.iJwxstoeHY3rDyi-wumNtG_tuc24QC7b4cL4FuhkJY0'
-		},
-	use_json=True
 
-)
+def get_posts(token: str, q: str) -> SearchModel:
+	transport = RequestsHTTPTransport(
+		'http://35.215.30.59:5555/graphql',
+		headers={
+			'Authorization': f'Bearer {token}'
+			},
+		use_json=True
 
-client = Client(transport=transport, fetch_schema_from_transport=True)
+	)
 
-def get_posts(q: str) -> SearchModel:
+	client = Client(transport=transport, fetch_schema_from_transport=True)
 	query = gql(f'''
 		query Search {{
 			getPosts(q: "{q}") {{
@@ -51,7 +50,11 @@ def get_posts(q: str) -> SearchModel:
 
 app = Flask(__name__)
 
-class TestService(ServiceBase):
+class AuthenticationHeader(ComplexModel):
+    Authorization = Unicode
+
+class LeareIntService(ServiceBase):
+	__in_header__ = AuthenticationHeader
 
 	@rpc(_returns=Unicode)
 	def get_time(self):
@@ -63,9 +66,11 @@ class TestService(ServiceBase):
 	
 	@rpc(Unicode, _returns=Array(SearchModel))
 	def search(self, q):
-		return get_posts(q)
+		headers = self.in_header
+		token = headers.Authorization
+		return get_posts(token, q)
 
-soap_app = Application([TestService], 'test_service',
+soap_app = Application([LeareIntService], 'leare_int',
 					   in_protocol=Soap11(validator='lxml'),
 					   out_protocol=Soap11())
 wsgi_app = WsgiApplication(soap_app)
